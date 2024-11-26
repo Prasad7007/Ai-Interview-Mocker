@@ -8,6 +8,6 @@ export default defineConfig({
   dialect: "postgresql",
   schema: "./utils/schema.js",
   dbCredentials: {
-    url:"postgresql://neondb_owner:vx1wE6qIHiot@ep-quiet-bush-a58xb5b9.us-east-2.aws.neon.tech/Ai-Interview-Mocker?sslmode=require"
+    url:"postgresql://ai-interview-mocker_owner:9QJ5fXRldZwg@ep-blue-lab-a89j892q.eastus2.azure.neon.tech/ai-interview-mocker?sslmode=require"
   }
 });

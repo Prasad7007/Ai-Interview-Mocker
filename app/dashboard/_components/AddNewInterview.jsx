@@ -18,16 +18,18 @@ import {
 import { chatSession } from '@/utils/GeminiAIModel';
 import { MockInterview } from '@/utils/schema';
 import moment from 'moment'
+import { useRouter } from 'next/navigation';
 
   
 
 const AddNewInterview = () => {
     const [openDailog, setOpenDailog] = useState(false);
-    const [jobPosition, setJobPosition] = useState();
-    const [jobDesc, setJobDesc] = useState();
-    const [jobExperience, setJobExperience] = useState();
+    const [jobPosition, setJobPosition] = useState("");
+    const [jobDesc, setJobDesc] = useState("");
+    const [jobExperience, setJobExperience] = useState("");
     const [loading, setLoading]=useState(false);
     const [JsonResponse, setJsonResponse]=useState([]);
+    const router = useRouter();
     const {user}=useUser();
 
     const onSubmit = async(e) => {
@@ -61,6 +63,7 @@ const AddNewInterview = () => {
         }
         else {
             console.log("ERROR");
+            router.push('/dashboard/interview/'+resp[0]?.mockId)
         }
         
 
