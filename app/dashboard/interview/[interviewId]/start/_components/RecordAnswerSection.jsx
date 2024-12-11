@@ -123,7 +123,7 @@ function RecordAnswerSection({mockInterviewQuestion,activeQuestionIndex,intervie
         
       'Record Answer'}</Button>
     
-    <Button onClick={()=>console.log(userAnswer)}>Show User Answer</Button>
+    {/* <Button onClick={()=>console.log(userAnswer)}>Show User Answer</Button> */}
     </div>
   );
 }

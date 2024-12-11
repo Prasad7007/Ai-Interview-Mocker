@@ -32,43 +32,48 @@ const AddNewInterview = () => {
     const router = useRouter();
     const {user}=useUser();
 
-    const onSubmit = async(e) => {
+    const onSubmit = async (e) => {
         setLoading(true);
         e.preventDefault();
         console.log(jobPosition, jobDesc, jobExperience);
-
-        const InputPrompt="Job Position:"+jobPosition+"; Job Description: "+jobDesc+"; Job Experience: "+jobExperience+" Years; Depends on this please give "+process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT+" interview questions with answers in Json format. Give us question and answer field on JSON.";
-        
-        const result=await chatSession.sendMessage(InputPrompt);
-        const MockJsonResp=(result.response.text()).replace('```json','').replace('```','');
-        console.log(JSON.parse(MockJsonResp));
-        setJsonResponse(MockJsonResp);
-
-        if(MockJsonResp){
-            const resp=await db.insert(MockInterview)
-            .values({
-                mockId:uuidv4(),
-                jsonMockResp:MockJsonResp,
-                jobPosition:jobPosition,
-                jobDesc:jobDesc,
-                jobExperience:jobExperience,
-                createdBy:user?.primaryEmailAddress?.emailAddress,
-                createdAt:moment().format('DD-MM-YYYY')
-            }).returning({mockId:MockInterview.mockId});
-
-            console.log('Inserted ID:', resp);
-            if(resp) {
-                setOpenDailog(false);
+    
+        const InputPrompt = `Job Position: ${jobPosition}; Job Description: ${jobDesc}; Job Experience: ${jobExperience} Years; Depends on this, please give ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} interview questions with answers in JSON format. Give us question and answer fields in JSON.`;
+    
+        try {
+            const result = await chatSession.sendMessage(InputPrompt);
+            const mockJsonResp = (await result.response.text())
+                .replace('```json', '')
+                .replace('```', '');
+            
+            setJsonResponse(mockJsonResp);
+            console.log(JSON.parse(mockJsonResp));
+    
+            if (mockJsonResp) {
+                const resp = await db.insert(MockInterview)
+                    .values({
+                        mockId: uuidv4(),
+                        jsonMockResp: mockJsonResp,
+                        jobPosition: jobPosition,
+                        jobDesc: jobDesc,
+                        jobExperience: jobExperience,
+                        createdBy: user?.primaryEmailAddress?.emailAddress,
+                        createdAt: moment().format('DD-MM-YYYY'),
+                    })
+                    .returning({ mockId: MockInterview.mockId });
+    
+                console.log('Inserted ID:', resp);
+    
+                if (resp.length > 0) {
+                    setOpenDailog(false);
+                    router.push(`/dashboard/interview/${resp[0].mockId}`); // Navigate to the interview page
+                }
             }
+        } catch (error) {
+            console.error("Error:", error);
+        } finally {
+            setLoading(false);
         }
-        else {
-            console.log("ERROR");
-            router.push('/dashboard/interview/'+resp[0]?.mockId)
-        }
-        
-
-        setLoading(false);
-    }
+    };
   return (
     <div>
       <div className='p-10 border rounded-lg bg-secondary hover:scale-105 hover:shadow-md cursor-pointer transition-all' 
